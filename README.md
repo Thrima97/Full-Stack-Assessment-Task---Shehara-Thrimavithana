@@ -1,4 +1,28 @@
-# 🧩 Workspace Booking Management System
+# 🧩 Workspace Management System
+
+## 🌐 Live Demo
+
+The Workspace Management System is currently deployed for testing purposes at:
+
+🔗 [Live Demo](https://workspace-management-system-main-xozttq.laravel.cloud/)
+
+> Deployed via [Laravel Cloud](https://laravel.com/cloud).
+
+### 🧪 Test Credentials
+
+You can use the following test accounts to explore the system:
+
+**Admin User**  
+Email: `admin@admin.com`  
+Password: `adminadmin`
+
+**Regular User**  
+Email: `user@user.com`  
+Password: `useruser`
+
+---
+
+## 🏢 Workspace Management System — Laravel 12 + React Full-Stack Platform
 
 A full-stack workspace booking management platform built with *Laravel 12* and *React*, supporting:
 
@@ -99,3 +123,42 @@ php artisan user:promote {email}
 ```
 
  **promote admin using shell**
+
+ ---
+
+## ✅ Feature Tests
+
+This project includes 7 feature tests to ensure all core booking functionalities are working as expected:
+
+- `AdminAddNicDetailsTest.php` – Upload NIC details for bookings
+- `AdminUpdateBookingStatusTest.php` – Accept/reject booking requests
+- `AdminUploadContractTest.php` – Upload signed booking contracts
+- `CreateBookingTest.php` – Create new workspace bookings
+- `ExtendBookingTest.php` – Extend existing bookings
+- `FetchBookingHistoryTest.php` – Retrieve user booking history
+- `FetchPackagesTest.php` – List available workspace packages
+
+All test files are located in the `tests/Feature/` directory.
+
+---
+
+## 📬 API Testing with Postman
+
+A Postman collection is included to help you test and explore the API endpoints.
+
+📁 File: `postman/api_collection.json`  
+🔐 Auth: Uses Laravel Sanctum with Bearer Token
+
+### 📌 Includes:
+- User authentication
+- Package listing
+- Booking creation & history
+- Booking extension
+- Admin: approve/reject, upload NIC & contracts
+
+To get started:
+1. Import the collection into Postman
+2. Set `base_url` (e.g., `http://localhost:8000`)
+3. Run `Authenticate` to get your `auth_token`
+4. Use other endpoints with `{{auth_token}}` prefilled
+
