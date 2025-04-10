@@ -5,6 +5,14 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    server: {
+        host: '0.0.0.0', // ✅ Important: make Vite accessible outside container
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: 'localhost', // ✅ Optional: for host machine compatibility
+        },
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],

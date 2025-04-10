@@ -1,0 +1,350 @@
+{
+    "info": {
+        "_postman_id": "8b080665-3b05-4172-92c3-650e080def20",
+        "name": "API Endpoints",
+        "description": "Laravel Sanctum Auth + Package API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "23597595"
+    },
+    "item": [
+        {
+            "name": "Authenticate",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"shehara@gmail.com\",\n  \"password\": \"11111111\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/auth",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "auth"]
+                },
+                "description": "Authenticate user and retrieve Sanctum token for subsequent requests."
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "let response = pm.response.json();",
+                            "if (response.token) {",
+                            "    pm.collectionVariables.set(\"auth_token\", response.token);",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "response": []
+        },
+        {
+            "name": "Fetch all packages",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{auth_token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{auth_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/packages",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "packages"]
+                },
+                "description": "Retrieve a list of all available workspace packages."
+            },
+            "response": []
+        },
+        {
+            "name": "Create a booking",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{auth_token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{auth_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"package_id\": \"booking_id\",\n  \"start_date\": \"2025-05-01\",\n  \"end_date\": \"2025-05-31\",\n  \"price\": \"100.00\",\n  \"full_name\": \"Your Full Nae\",\n  \"company_name\": \"Your Company Name\",\n  \"telephone\": \"0777123456\",\n  \"email\": \"your.email@mail.com\",\n  \"address\": \"your address\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/bookings",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "bookings"]
+                },
+                "description": "Submit a new booking request with customer details, package, and date range."
+            },
+            "response": []
+        },
+        {
+            "name": "Get user booking history",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{auth_token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{auth_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/bookings?user_id=user_id",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "bookings"],
+                    "query": [
+                        {
+                            "key": "user_id",
+                            "value": "user_id"
+                        }
+                    ]
+                },
+                "description": "Retrieve booking history of a specific user by user ID."
+            },
+            "response": []
+        },
+        {
+            "name": "Extend booking period",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{auth_token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{auth_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"booking_id\": \"booking_id\",\n  \"duration\": \"extend_period\" //in:daily,2-day,weekly,monthly,yearly\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/booking-extend",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "booking-extend"]
+                },
+                "description": "Extend the duration of a booking using one of the allowed duration types."
+            },
+            "response": []
+        },
+        {
+            "name": "Update booking status",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{auth_token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{auth_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"status\": \"status\" //in:accepted,rejected\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/admin/bookings/{package_id}",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "admin", "bookings", "{package_id}"]
+                },
+                "description": "Update the status of a booking (accepted/rejected) as an admin."
+            },
+            "response": []
+        },
+        {
+            "name": "Add NIC data to booking",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{auth_token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{auth_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"booking_id\": \"booking_id\",\n  \"nic_number\": \"nic_number\",\n  \"company\": \"your company name\",\n  \"user_id\": \"user_id\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/admin/nic-details",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "admin", "nic-details"]
+                },
+                "description": "Add NIC number and company name to a specific booking. Admin-only endpoint."
+            },
+            "response": []
+        },
+        {
+            "name": "Upload Contracts",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{auth_token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{auth_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "booking_id",
+                            "value": "booking_id",
+                            "type": "text"
+                        },
+                        {
+                            "key": "contract_file",
+                            "type": "file",
+                            "src": []
+                        }
+                    ]
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/admin/contracts",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "admin", "contracts"]
+                },
+                "description": "Upload contract files for a booking. Requires `booking_id` and a file upload. Admin-only."
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000"
+        },
+        {
+            "key": "auth_token",
+            "value": ""
+        }
+    ]
+}
