@@ -186,69 +186,20 @@ export default function CreateBooking() {
             <Head title="Booking Form" />
 
             <div className="mx-auto mt-8 max-w-xl space-y-6 px-4">
-                <h1 className="text-2xl font-bold text-gray-800">Book a Workspace</h1>
+                {isAvailable === true ? (
+                    <h1 className="text-2xl font-bold text-white">Book a Workspace</h1>
+                ) : (
+                    <h1 className="text-xl font-bold text-white">Check Availability on Workspace</h1>
+                )}
 
                 <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                        <div className="col-span-3">
-                            <label className="block text-sm font-medium text-gray-600">Full Name</label>
-                            <input
-                                type="text"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                                className="w-full rounded border px-3 py-2"
-                            />
-                            {validationErrors.full_name && <p className="text-sm text-red-600">{validationErrors.full_name}</p>}
-                        </div>
-                        <div className="col-span-3">
-                            <label className="block text-sm font-medium text-gray-600">Company Name</label>
-                            <input
-                                type="text"
-                                value={companyName}
-                                onChange={(e) => setCompanyName(e.target.value)}
-                                className="w-full rounded border px-3 py-2"
-                            />
-                            {validationErrors.company_name && <p className="text-sm text-red-600">{validationErrors.company_name}</p>}
-                        </div>
-                        <div className="col-span-3">
-                            <label className="block text-sm font-medium text-gray-600">Telephone</label>
-                            <input
-                                type="text"
-                                value={telephone}
-                                onChange={(e) => setTelephone(e.target.value)}
-                                className="w-full rounded border px-3 py-2"
-                            />
-                            {validationErrors.telephone && <p className="text-sm text-red-600">{validationErrors.telephone}</p>}
-                        </div>
-                        <div className="col-span-3">
-                            <label className="block text-sm font-medium text-gray-600">Email</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full rounded border px-3 py-2"
-                            />
-                            {validationErrors.email && <p className="text-sm text-red-600">{validationErrors.email}</p>}
-                        </div>
-                        <div className="col-span-3">
-                            <label className="block text-sm font-medium text-gray-600">Address</label>
-                            <input
-                                type="text"
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
-                                className="w-full rounded border px-3 py-2"
-                            />
-                            {validationErrors.address && <p className="text-sm text-red-600">{validationErrors.address}</p>}
-                        </div>
-                    </div>
-
                     <div>
-                        <label htmlFor="package" className="mb-1 block text-sm font-medium text-gray-600">
+                        <label htmlFor="package" className="mb-1 block text-sm font-medium text-white">
                             Select Package
                         </label>
                         <select
                             id="package"
-                            className="w-full rounded border px-3 py-2"
+                            className="w-full rounded border px-3 py-2 text-white"
                             value={selectedPackageId ?? ''}
                             onChange={(e) => {
                                 setSelectedPackageId(Number(e.target.value));
@@ -256,9 +207,11 @@ export default function CreateBooking() {
                                 setPrice('');
                             }}
                         >
-                            <option value="">-- Select Package --</option>
+                            <option value="" className="text-black">
+                                -- Select Package --
+                            </option>
                             {packages.map((pkg) => (
-                                <option key={pkg.id} value={pkg.id}>
+                                <option key={pkg.id} value={pkg.id} className="text-black">
                                     {pkg.name} ({pkg.seat} seats)
                                 </option>
                             ))}
@@ -269,14 +222,14 @@ export default function CreateBooking() {
                     {/* Start and End Dates */}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label htmlFor="start-date" className="block text-sm font-medium text-gray-600">
+                            <label htmlFor="start-date" className="block text-sm font-medium text-white">
                                 Start Date
                             </label>
                             <input
                                 id="start-date"
                                 type="date"
                                 min={format(new Date(), 'yyyy-MM-dd')}
-                                className="w-full rounded border px-3 py-2"
+                                className="w-full rounded border px-3 py-2 text-white"
                                 value={startDate}
                                 onChange={(e) => {
                                     setStartDate(e.target.value);
@@ -288,14 +241,14 @@ export default function CreateBooking() {
                         </div>
 
                         <div>
-                            <label htmlFor="end-date" className="block text-sm font-medium text-gray-600">
+                            <label htmlFor="end-date" className="block text-sm font-medium text-white">
                                 End Date
                             </label>
                             <input
                                 id="end-date"
                                 type="date"
                                 min={startDate || format(new Date(), 'yyyy-MM-dd')}
-                                className="w-full rounded border px-3 py-2"
+                                className="w-full rounded border px-3 py-2 text-white"
                                 value={endDate}
                                 onChange={(e) => {
                                     setEndDate(e.target.value);
@@ -308,19 +261,71 @@ export default function CreateBooking() {
                     </div>
 
                     {isAvailable === true && (
-                        <div>
-                            <label htmlFor="price" className="mb-1 block text-sm font-medium text-gray-600">
-                                Enter Price (LKR)
-                            </label>
-                            <input
-                                id="price"
-                                type="text"
-                                className="w-full rounded border px-3 py-2"
-                                value={price}
-                                onChange={(e) => setPrice(e.target.value)}
-                                placeholder="e.g. 123.45"
-                            />
-                            {validationErrors.price && <p className="text-sm text-red-600">{validationErrors.price}</p>}
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div className="col-span-3">
+                                <label className="block text-sm font-medium text-white">Full Name</label>
+                                <input
+                                    type="text"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    className="w-full rounded border px-3 py-2 text-white"
+                                />
+                                {validationErrors.full_name && <p className="text-sm text-red-600">{validationErrors.full_name}</p>}
+                            </div>
+                            <div className="col-span-3">
+                                <label className="block text-sm font-medium text-white">Company Name</label>
+                                <input
+                                    type="text"
+                                    value={companyName}
+                                    onChange={(e) => setCompanyName(e.target.value)}
+                                    className="w-full rounded border px-3 py-2 text-white"
+                                />
+                                {validationErrors.company_name && <p className="text-sm text-red-600">{validationErrors.company_name}</p>}
+                            </div>
+                            <div className="col-span-3">
+                                <label className="block text-sm font-medium text-white">Telephone</label>
+                                <input
+                                    type="text"
+                                    value={telephone}
+                                    onChange={(e) => setTelephone(e.target.value)}
+                                    className="w-full rounded border px-3 py-2 text-white"
+                                />
+                                {validationErrors.telephone && <p className="text-sm text-red-600">{validationErrors.telephone}</p>}
+                            </div>
+                            <div className="col-span-3">
+                                <label className="block text-sm font-medium text-white">Email</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full rounded border px-3 py-2 text-white"
+                                />
+                                {validationErrors.email && <p className="text-sm text-red-600">{validationErrors.email}</p>}
+                            </div>
+                            <div className="col-span-3">
+                                <label className="block text-sm font-medium text-white">Address</label>
+                                <input
+                                    type="text"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    className="w-full rounded border px-3 py-2 text-white"
+                                />
+                                {validationErrors.address && <p className="text-sm text-red-600">{validationErrors.address}</p>}
+                            </div>
+                            <div className="col-span-3">
+                                <label htmlFor="price" className="mb-1 block text-sm font-medium text-white">
+                                    Enter Price (LKR)
+                                </label>
+                                <input
+                                    id="price"
+                                    type="text"
+                                    className="w-full rounded border px-3 py-2 text-white"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    placeholder="e.g. 123.45"
+                                />
+                                {validationErrors.price && <p className="text-sm text-red-600">{validationErrors.price}</p>}
+                            </div>
                         </div>
                     )}
 
@@ -341,8 +346,8 @@ export default function CreateBooking() {
                     </div>
 
                     {error && <p className="text-sm text-red-600">{error}</p>}
-                    {isAvailable === true && <p className="text-sm text-green-600">Package is available ✅</p>}
-                    {isAvailable === false && <p className="text-sm text-red-600">Package is NOT available ❌</p>}
+                    {isAvailable === true && <p className="mb-4 text-sm text-green-600">Package is available ✅</p>}
+                    {isAvailable === false && <p className="mb-4 text-sm text-red-600">Package is NOT available ❌</p>}
                 </div>
             </div>
         </AppLayout>

@@ -11,7 +11,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
@@ -30,35 +30,33 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
         {
             title: 'Booking Management',
             href: '/admin/booking-management',
-            icon: LayoutGrid,
         },
         {
             title: 'User Management',
             href: '/admin/user-management',
-            icon: LayoutGrid,
         },
         {
             title: 'Package Management',
             href: '/admin/package-management',
-            icon: LayoutGrid,
         },
         {
             title: 'Reports & Analytics',
             href: '/admin/reports-and-analytics',
-            icon: LayoutGrid,
         },
     ];
 
     const userNavItems: NavItem[] = [
         {
+            title: 'Calendar View',
+            href: '/user/calendar-view',
+        },
+        {
             title: 'Booking Form',
             href: '/user/booking-form',
-            icon: LayoutGrid,
         },
         {
             title: 'Dashboard',
             href: '/user/dashboard',
-            icon: LayoutGrid,
         },
     ];
 
@@ -75,18 +73,18 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         <Sheet>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon" className="mr-2 h-[34px] w-[34px]">
-                                    <Menu className="h-5 w-5" />
+                                    <Menu className="h-5 w-5 text-white" />
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left" className="bg-sidebar flex h-full w-64 flex-col justify-between">
-                                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                                <SheetHeader className="flex justify-start text-left">
+                                <SheetTitle className="sr-only bg-black">Navigation Menu</SheetTitle>
+                                <SheetHeader className="flex justify-start text-left bg-black">
                                     <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
                                 </SheetHeader>
                                 <div className="flex-1 space-y-4 p-4">
                                     {mainNavItems.map((item) => (
                                         <Link key={item.title} href={item.href} className="flex items-center space-x-2 font-medium">
-                                            {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
+                                            {item.icon && <Icon iconNode={item.icon} className="mr-2 h-4 w-4" />}
                                             <span>{item.title}</span>
                                         </Link>
                                     ))}
@@ -105,16 +103,16 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         <NavigationMenu className="flex h-full items-stretch">
                             <NavigationMenuList className="flex h-full items-stretch space-x-2">
                                 {mainNavItems.map((item, index) => (
-                                    <NavigationMenuItem key={index} className="relative flex h-full items-center">
+                                    <NavigationMenuItem key={index} className="relative flex h-full items-center bg-transparent hover:bg-transparent">
                                         <Link
                                             href={item.href}
                                             className={cn(
                                                 navigationMenuTriggerStyle(),
                                                 page.url === item.href && activeItemStyles,
-                                                'h-9 cursor-pointer px-3',
+                                                'h-9 cursor-pointer bg-transparent px-3 text-white',
                                             )}
                                         >
-                                            {item.icon && <Icon iconNode={item.icon} className="mr-2 h-4 w-4" />}
+                                            {' '}
                                             {item.title}
                                         </Link>
                                         {page.url === item.href && (
@@ -127,8 +125,8 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     </div>
 
                     {/* Right Side (Avatar & Menu) */}
-                    <div className="ml-auto flex items-center space-x-2">
-                        <div className="hidden lg:flex">
+                    <div className="ml-auto flex items-center space-x-2 bg-black">
+                        <div className="hidden lg:flex bg-black">
                             {rightNavItems.map((item) => (
                                 <TooltipProvider key={item.title} delayDuration={0}>
                                     <Tooltip>
@@ -139,8 +137,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                 rel="noopener noreferrer"
                                                 className="group text-accent-foreground ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring ml-1 inline-flex h-9 w-9 items-center justify-center rounded-md bg-transparent p-0 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                                             >
-                                                <span className="sr-only">{item.title}</span>
-                                                {item.icon && <Icon iconNode={item.icon} className="size-5 opacity-80 group-hover:opacity-100" />}
+                                                <span className="sr-only">{item.title}</span>{' '}
                                             </a>
                                         </TooltipTrigger>
                                         <TooltipContent>
