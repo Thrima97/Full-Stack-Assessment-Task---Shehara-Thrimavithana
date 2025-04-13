@@ -19,11 +19,10 @@ const setCookie = (name: string, value: string, days = 365) => {
     document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
 };
 
-const applyTheme = (appearance: Appearance) => {
-    const isDark = appearance === 'dark' || (appearance === 'system' && prefersDark());
-
-    document.documentElement.classList.toggle('dark', isDark);
-};
+export function applyTheme(mode: 'light') {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+}
 
 const mediaQuery = () => {
     if (typeof window === 'undefined') {
@@ -39,12 +38,11 @@ const handleSystemThemeChange = () => {
 };
 
 export function initializeTheme() {
-    const savedAppearance = (localStorage.getItem('appearance') as Appearance) || 'system';
+    // Force light mode always
+    applyTheme('light');
 
-    applyTheme(savedAppearance);
-
-    // Add the event listener for system theme changes...
-    mediaQuery()?.addEventListener('change', handleSystemThemeChange);
+    // Optional: clear any old saved appearance
+    localStorage.removeItem('appearance');
 }
 
 export function useAppearance() {
