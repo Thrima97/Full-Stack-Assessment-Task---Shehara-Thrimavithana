@@ -68,8 +68,8 @@ export default function UserBooking() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Your Bookings" />
 
-            <div className="mx-auto mt-8 max-w-7xl space-y-6 px-4 sm:px-6 lg:px-0">
-                <h1 className="text-2xl font-bold">Your Bookings</h1>
+            <div className="mx-auto mt-8 max-w-7xl space-y-6 px-4 sm:px-6 lg:px-0 pb-8">
+                <h1 className="text-2xl font-bold text-white">Your Bookings</h1>
 
                 {flash?.success && (
                     <div className="rounded-md border border-green-300 bg-green-100 px-4 py-3 text-sm text-green-800">{flash.success}</div>
