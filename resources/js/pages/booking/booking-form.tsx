@@ -161,7 +161,18 @@ export default function CreateBooking() {
             );
 
             toast.success('Booking request submitted successfully!');
-            console.log(response.data);
+
+            // Clear form fields after successful submit
+            setSelectedPackageId(null);
+            setStartDate('');
+            setEndDate('');
+            setPrice('');
+            setFullName('');
+            setCompanyName('');
+            setTelephone('');
+            setEmail('');
+            setAddress('');
+            setValidationErrors({});
         } catch (error: any) {
             if (error.response) {
                 const errors = error.response.data.errors || {};

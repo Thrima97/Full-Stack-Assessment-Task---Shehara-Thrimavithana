@@ -31,7 +31,7 @@ export default function BookingDetailModal({ open, onClose, booking }: Props) {
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-xl rounded-2xl border border-gray-200 shadow-lg" aria-describedby="booking-details-description">
+            <DialogContent className="max-w-xl rounded-2xl border border-gray-200 shadow-lg bg-white/80" aria-describedby="booking-details-description">
                 <DialogHeader>
                     <DialogTitle className="text-lg font-bold text-gray-800">Booking Details #{booking.id}</DialogTitle>
                 </DialogHeader>

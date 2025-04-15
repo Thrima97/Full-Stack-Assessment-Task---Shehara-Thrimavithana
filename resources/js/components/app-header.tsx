@@ -137,8 +137,8 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     </div>
 
                     {/* Right Side (Avatar & Menu) */}
-                    <div className="ml-auto flex items-center space-x-2 bg-black">
-                        <div className="hidden bg-black lg:flex">
+                    <div className="ml-auto flex items-center space-x-2 bg-transparent">
+                        <div className="hidden bg-transparent lg:flex">
                             {rightNavItems.map((item) => (
                                 <TooltipProvider key={item.title} delayDuration={0}>
                                     <Tooltip>
