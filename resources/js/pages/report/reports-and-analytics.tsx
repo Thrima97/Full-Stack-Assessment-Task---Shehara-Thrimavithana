@@ -68,34 +68,40 @@ export default function Dashboard({ packages }: Props) {
             </div>
 
             {/* Results */}
-            <div className="mx-4 mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {packages.map((pkg) => {
-                    const total = pkg.bookings.reduce((sum, b) => sum + parseFloat(b.price), 0);
+            <div className="mx-4 mb-4">
+                {packages.length === 0 ? (
+                    <p className="text-center text-gray-300">No packages data</p>
+                ) : (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {packages.map((pkg) => {
+                            const total = pkg.bookings.reduce((sum, b) => sum + parseFloat(b.price), 0);
 
-                    return (
-                        <div key={pkg.id} className="rounded border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md">
-                            <h2 className="text-lg font-semibold text-gray-800">
-                                {pkg.name} <span className="text-sm text-gray-500">({pkg.seat} seats)</span>
-                            </h2>
-                            <p className="text-sm text-gray-500">{pkg.description}</p>
+                            return (
+                                <div key={pkg.id} className="rounded border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md">
+                                    <h2 className="text-lg font-semibold text-gray-800">
+                                        {pkg.name} <span className="text-sm text-gray-500">({pkg.seat} seats)</span>
+                                    </h2>
+                                    <p className="text-sm text-gray-500">{pkg.description}</p>
 
-                            <p className="mt-3 font-semibold text-green-700">
-                                Total Revenue: <span className="font-bold">LKR {total.toLocaleString()}</span>
-                            </p>
+                                    <p className="mt-3 font-semibold text-green-700">
+                                        Total Revenue: <span className="font-bold">LKR {total.toLocaleString()}</span>
+                                    </p>
 
-                            <ul className="mt-2 space-y-1 text-sm text-gray-700">
-                                {pkg.bookings.map((b) => (
-                                    <li key={b.id}>
-                                        <span className="text-gray-600">
-                                            {format(parseISO(b.start_date), 'PPP')} → {format(parseISO(b.end_date), 'PPP')}
-                                        </span>{' '}
-                                        — LKR {b.price}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    );
-                })}
+                                    <ul className="mt-2 space-y-1 text-sm text-gray-700">
+                                        {pkg.bookings.map((b) => (
+                                            <li key={b.id}>
+                                                <span className="text-gray-600">
+                                                    {format(parseISO(b.start_date), 'PPP')} → {format(parseISO(b.end_date), 'PPP')}
+                                                </span>{' '}
+                                                — LKR {b.price}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </AppLayout>
     );
