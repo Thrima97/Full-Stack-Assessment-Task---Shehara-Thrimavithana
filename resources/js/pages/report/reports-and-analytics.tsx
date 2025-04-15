@@ -46,24 +46,29 @@ export default function Dashboard({ packages }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports & Analytics" />
-            <h1 className="mx-4 mt-5 text-2xl font-bold">📊 Reports & Analytics</h1>
+            <h1 className="mx-4 mt-5 text-2xl font-bold text-white">📊 Reports & Analytics</h1>
 
             {/* Date Range Filter */}
             <div className="mx-4 mt-4 mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <input
                     type="date"
-                    className="w-full rounded border px-3 py-2 text-sm"
+                    className="w-full rounded border px-3 py-2 text-sm text-white"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                 />
-                <input type="date" className="w-full rounded border px-3 py-2 text-sm" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                <input
+                    type="date"
+                    className="w-full rounded border px-3 py-2 text-sm text-white"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                />
                 <button onClick={filter} className="w-full rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
                     Apply Filters
                 </button>
             </div>
 
             {/* Results */}
-            <div className="mx-4 mb-4 space-y-4">
+            <div className="mx-4 mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {packages.map((pkg) => {
                     const total = pkg.bookings.reduce((sum, b) => sum + parseFloat(b.price), 0);
 

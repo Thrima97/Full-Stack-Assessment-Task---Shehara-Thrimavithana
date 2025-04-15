@@ -89,89 +89,118 @@ export default function Dashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="User Management" />
-            <div className="mx-auto max-w-2xl space-y-8 py-6">
-                <h1 className="text-xl font-semibold text-gray-800">User Management</h1>
+            <div className="mx-auto max-w-5xl space-y-8 px-4 py-6">
+                <h1 className="text-xl font-semibold text-white">User Management</h1>
 
-                {/* NIC Section */}
-                <div className="rounded-lg border p-4 shadow-sm">
-                    <h2 className="mb-3 text-lg font-medium">Add NIC Details to Booking</h2>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    {/* Description Box - show first on mobile, last on desktop */}
+                    <div className="order-2 md:order-2">
+                        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                            <h2 className="mb-2 text-lg font-semibold text-gray-800">User Management Overview</h2>
+                            <p className="text-sm text-gray-600">This panel allows admins to manage users for workspace bookings:</p>
+                            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-gray-700">
+                                <li>Add users to existing bookings with NIC and company details.</li>
+                                <li>Upload signed contracts for verification.</li>
+                                <li>Ensure proper assignment and documentation for all bookings.</li>
+                            </ul>
+                            <p className="mt-3 text-sm text-gray-500">All actions are securely logged and tied to specific bookings.</p>
+                        </div>
+                    </div>
 
-                    <select
-                        className="mb-2 w-full rounded border px-3 py-2"
-                        value={bookingId ?? ''}
-                        onChange={(e) => setBookingId(Number(e.target.value))}
-                    >
-                        <option value="">Select Booking</option>
-                        {bookingOptions?.map((option) => (
-                            <option key={option.id} value={option.id}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                    {renderError('booking_id')}
+                    {/* Form Section - show second on mobile, first on desktop */}
+                    <div className="order-1 md:order-1 md:col-span-2">
+                        {/* NIC Section */}
+                        <div className="mb-4 rounded-lg border p-4 shadow-sm">
+                            <h2 className="mb-3 text-lg font-medium text-white">Add NIC Details to Booking</h2>
 
-                    <select className="mb-2 w-full rounded border px-3 py-2" value={userId ?? ''} onChange={(e) => setUserId(Number(e.target.value))}>
-                        <option value="">Select User</option>
-                        {userOptions?.map((option) => (
-                            <option key={option.id} value={option.id}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                    {renderError('user_id')}
+                            <select
+                                className="mb-2 w-full rounded border px-3 py-2 text-white"
+                                value={bookingId ?? ''}
+                                onChange={(e) => setBookingId(Number(e.target.value))}
+                            >
+                                <option value="" className="text-black">
+                                    Select Booking
+                                </option>
+                                {bookingOptions?.map((option) => (
+                                    <option className="text-black" key={option.id} value={option.id}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                            {renderError('booking_id')}
 
-                    <input
-                        type="text"
-                        className="mb-2 w-full rounded border px-3 py-2"
-                        placeholder="NIC Number"
-                        value={nic}
-                        onChange={(e) => setNic(e.target.value)}
-                    />
-                    {renderError('nic_number')}
+                            <select
+                                className="mb-2 w-full rounded border px-3 py-2 text-white"
+                                value={userId ?? ''}
+                                onChange={(e) => setUserId(Number(e.target.value))}
+                            >
+                                <option value="" className="text-black">
+                                    Select User
+                                </option>
+                                {userOptions?.map((option) => (
+                                    <option className="text-black" key={option.id} value={option.id}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                            {renderError('user_id')}
 
-                    <input
-                        type="text"
-                        className="mb-4 w-full rounded border px-3 py-2"
-                        placeholder="Company Name"
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                    />
-                    {renderError('company')}
+                            <input
+                                type="text"
+                                className="mb-2 w-full rounded border px-3 py-2 text-white placeholder:text-white"
+                                placeholder="NIC Number"
+                                value={nic}
+                                onChange={(e) => setNic(e.target.value)}
+                            />
+                            {renderError('nic_number')}
 
-                    <button onClick={submitNicDetails} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                        Submit NIC Details
-                    </button>
-                </div>
+                            <input
+                                type="text"
+                                className="mb-4 w-full rounded border px-3 py-2 text-white placeholder:text-white"
+                                placeholder="Company Name"
+                                value={company}
+                                onChange={(e) => setCompany(e.target.value)}
+                            />
+                            {renderError('company')}
 
-                {/* Contract Section */}
-                <div className="rounded-lg border p-4 shadow-sm">
-                    <h2 className="mb-3 text-lg font-medium">Upload Signed Contract</h2>
+                            <button onClick={submitNicDetails} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                                Submit NIC Details
+                            </button>
+                        </div>
 
-                    <select
-                        className="mb-2 w-full rounded border px-3 py-2"
-                        value={bookingId ?? ''}
-                        onChange={(e) => setBookingId(Number(e.target.value))}
-                    >
-                        <option value="">Select Booking</option>
-                        {bookingOptions?.map((option) => (
-                            <option key={option.id} value={option.id}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                    {renderError('booking_id')}
+                        {/* Contract Section */}
+                        <div className="rounded-lg border p-4 shadow-sm">
+                            <h2 className="mb-3 text-lg font-medium text-white">Upload Signed Contract</h2>
 
-                    <input
-                        type="file"
-                        className="block w-full cursor-pointer rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm file:mr-4 file:rounded file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-700"
-                        accept=".pdf,.png,.jpg,.jpeg"
-                        onChange={(e) => setContractFile(e.target.files?.[0] || null)}
-                    />
-                    {renderError('contract_file') || renderError('contract')}
+                            <select
+                                className="mb-2 w-full rounded border px-3 py-2 text-white"
+                                value={bookingId ?? ''}
+                                onChange={(e) => setBookingId(Number(e.target.value))}
+                            >
+                                <option className="text-black" value="">
+                                    Select Booking
+                                </option>
+                                {bookingOptions?.map((option) => (
+                                    <option className="text-black" key={option.id} value={option.id}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                            {renderError('booking_id')}
 
-                    <button onClick={submitContract} className="mt-3 rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
-                        Upload Contract
-                    </button>
+                            <input
+                                type="file"
+                                className="block w-full cursor-pointer rounded border border-gray-300 bg-transparent px-3 py-2 text-sm text-white shadow-sm file:mr-4 file:rounded file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-700"
+                                accept=".pdf,.png,.jpg,.jpeg"
+                                onChange={(e) => setContractFile(e.target.files?.[0] || null)}
+                            />
+                            {renderError('contract_file') || renderError('contract')}
+
+                            <button onClick={submitContract} className="mt-3 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                                Upload Contract
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </AppLayout>
