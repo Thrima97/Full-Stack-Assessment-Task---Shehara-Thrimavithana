@@ -68,7 +68,7 @@ export default function UserBooking() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Your Bookings" />
 
-            <div className="mx-auto mt-8 max-w-7xl space-y-6 px-4 sm:px-6 lg:px-0 pb-8">
+            <div className="mx-auto mt-8 max-w-7xl space-y-6 px-4 pb-8 sm:px-6 lg:px-0">
                 <h1 className="text-2xl font-bold text-white">Your Bookings</h1>
 
                 {flash?.success && (
@@ -134,7 +134,7 @@ export default function UserBooking() {
                             </div>
                         ))
                     ) : (
-                        <p className="text-sm text-gray-500">No bookings yet.</p>
+                        <p className="text-sm text-white">No bookings yet.</p>
                     )}
                 </div>
             </div>

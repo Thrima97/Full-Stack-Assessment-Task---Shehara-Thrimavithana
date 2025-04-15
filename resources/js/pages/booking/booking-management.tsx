@@ -1,17 +1,15 @@
-import BookingDetailModal from '@/components/booking-detail-modal';
-import ExtendConfirmModal from '@/components/extend-confirm-modal';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Head, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Bookings',
-        href: '/admin/booking-management',
-    },
-];
+import BookingDetailModal from '@/components/booking-detail-modal';
+import ExtendConfirmModal from '@/components/extend-confirm-modal';
+import AppLayout from '@/layouts/app-layout';
+
+const breadcrumbs = [{ title: 'Bookings', href: '/admin/booking-management' }];
 
 interface Booking {
     id: number;
@@ -33,43 +31,36 @@ interface Props {
     extendRanges: ExtendRange[];
 }
 
-export default function Booking({ bookings: initialBookings, extendRanges }: Props) {
+export default function BookingManagement({ bookings: initialBookings, extendRanges }: Props) {
     const { props } = usePage();
     const flash = props.flash as { success?: string };
+
     const [bookings, setBookings] = useState<Booking[]>(initialBookings);
     const [processing, setProcessing] = useState<number | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [selectedDurations, setSelectedDurations] = useState<Record<number, string>>({});
-    const [detailModalOpen, setDetailModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-
+    const [detailModalOpen, setDetailModalOpen] = useState(false);
     const [extendModalOpen, setExtendModalOpen] = useState(false);
-    const [pendingExtension, setPendingExtension] = useState<{
-        bookingId: number;
-        duration: ExtendRange['value'];
-        newEndDate: string;
-    } | null>(null);
-
+    const [pendingExtension, setPendingExtension] = useState<{ bookingId: number; duration: string; newEndDate: string } | null>(null);
     const [statusModalOpen, setStatusModalOpen] = useState(false);
-    const [pendingStatus, setPendingStatus] = useState<{
-        bookingId: number;
-        status: 'accepted' | 'rejected';
-    } | null>(null);
+    const [pendingStatus, setPendingStatus] = useState<{ bookingId: number; status: 'accepted' | 'rejected' } | null>(null);
+
+    useEffect(() => {
+        if (flash.success) {
+            toast.success(flash.success);
+        }
+    }, [flash.success]);
 
     const updateBookingStatus = async (id: number, status: 'accepted' | 'rejected') => {
         setProcessing(id);
-        setSuccessMessage(null);
-        setErrorMessage(null);
-
-        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
 
         try {
-            const response = await axios.put(
+            const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
+
+            const { data } = await axios.put(
                 `/api/admin/bookings/${id}`,
                 { status },
                 {
-                    withCredentials: true,
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
                         Accept: 'application/json',
@@ -78,36 +69,27 @@ export default function Booking({ bookings: initialBookings, extendRanges }: Pro
                 },
             );
 
-            const result = response.data;
+            if (!data.success) throw new Error(data.message || `Failed to ${status} booking.`);
 
-            if (!result.success) {
-                setErrorMessage(result?.message || `Failed to ${status} booking.`);
-                return;
-            }
-
-            setBookings((prev) => prev.map((booking) => (booking.id === id ? { ...booking, status } : booking)));
-            setSuccessMessage(`Booking has been ${status}.`);
-        } catch (error: any) {
-            const errorMessage = error?.response?.data?.message || error?.message || 'Unknown error occurred.';
-            setErrorMessage(`Something went wrong: ${errorMessage}`);
+            setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, status } : b)));
+            toast.success(`Booking ${status}`);
+        } catch (err: any) {
+            toast.error(err.message || 'Failed to update booking');
         } finally {
             setProcessing(null);
         }
     };
 
-    const extendBooking = async (booking_id: number, duration: ExtendRange['value']) => {
-        setProcessing(booking_id);
-        setSuccessMessage(null);
-        setErrorMessage(null);
-
-        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
+    const extendBooking = async (bookingId: number, duration: string) => {
+        setProcessing(bookingId);
 
         try {
-            const response = await axios.post(
+            const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
+
+            const { data } = await axios.post(
                 '/api/booking-extend',
-                { booking_id, duration },
+                { booking_id: bookingId, duration },
                 {
-                    withCredentials: true,
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
                         Accept: 'application/json',
@@ -116,167 +98,114 @@ export default function Booking({ bookings: initialBookings, extendRanges }: Pro
                 },
             );
 
-            const result = response.data;
+            if (!data.success || !data.updatedBooking) throw new Error(data.message || 'Failed to extend booking');
 
-            if (!result.success || !result.updatedBooking) {
-                setErrorMessage(result?.message || 'Failed to extend booking.');
-                return;
-            }
+            const updatedEnd = new Date(data.updatedBooking.end_date).toISOString().split('T')[0];
 
-            const updatedEndDate = new Date(result.updatedBooking.end_date).toISOString().split('T')[0];
-
-            setBookings((prev) => prev.map((booking) => (booking.id === booking_id ? { ...booking, end_date: updatedEndDate } : booking)));
-
-            setSelectedDurations((prev) => ({ ...prev, [booking_id]: '' }));
-            setSuccessMessage('Booking extended successfully.');
-        } catch (error: any) {
-            const errorMessage = error?.response?.data?.message || error?.message || 'Unknown error occurred.';
-            setErrorMessage(errorMessage);
+            setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, end_date: updatedEnd } : b)));
+            setSelectedDurations((prev) => ({ ...prev, [bookingId]: '' }));
+            toast.success('Booking extended successfully');
+        } catch (err: any) {
+            toast.error(err.message || 'Extension failed');
         } finally {
             setProcessing(null);
         }
     };
-
-    useEffect(() => {
-        if (successMessage || errorMessage) {
-            const timer = setTimeout(() => {
-                setSuccessMessage(null);
-                setErrorMessage(null);
-            }, 4000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, errorMessage]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Booking Management" />
 
-            <div className="mx-auto mt-8 max-w-5xl space-y-6">
-                <h1 className="text-2xl font-bold">Booking Management</h1>
+            <div className="mx-auto mt-8 max-w-7xl space-y-6">
+                <h1 className="text-2xl font-bold text-white">Booking Management</h1>
 
-                {flash?.success && <div className="rounded border border-green-300 bg-green-100 p-3 text-sm text-green-800">{flash.success}</div>}
-                {successMessage && <div className="rounded border border-green-300 bg-green-100 p-3 text-sm text-green-800">{successMessage}</div>}
-                {errorMessage && <div className="rounded border border-red-300 bg-red-100 p-3 text-sm text-red-800">{errorMessage}</div>}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {bookings.map((booking, index) => (
+                        <div key={booking.id} className="min-w-xs rounded-lg border bg-white p-4 shadow-sm">
+                            <div className="flex justify-between">
+                                <div className="mb-1 text-xs text-gray-400">#{index + 1}</div>
+                                <button
+                                    onClick={() => {
+                                        setSelectedBooking(booking);
+                                        setDetailModalOpen(true);
+                                    }}
+                                    className="flex cursor-pointer items-center text-xs text-blue-600 hover:underline"
+                                >
+                                    <FontAwesomeIcon icon={faEye} className="mr-1 h-3 w-3" />
+                                    View
+                                </button>
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900">{booking.full_name}</h3>
+                            <p className="text-sm text-gray-600">Package: {booking.package_name}</p>
+                            <p className="text-sm text-gray-600">
+                                Date: {booking.start_date} → {booking.end_date}
+                            </p>
+                            <p className="text-sm text-gray-600">Price: LKR {booking.price}</p>
+                            <p
+                                className={`text-sm font-semibold capitalize ${booking.status === 'accepted' ? 'text-green-600' : booking.status === 'rejected' ? 'text-red-600' : 'text-yellow-600'}`}
+                            >
+                                Status: {booking.status}
+                            </p>
 
-                <div className="overflow-x-auto rounded border">
-                    <table className="min-w-full text-left text-sm">
-                        <thead className="bg-gray-100 text-xs text-gray-500 uppercase">
-                            <tr>
-                                <th className="px-4 py-2">#</th>
-                                <th className="px-4 py-2">Full Name</th>
-                                <th className="px-4 py-2">Package</th>
-                                <th className="px-4 py-2">Date Range</th>
-                                <th className="px-4 py-2">Price (LKR)</th>
-                                <th className="px-4 py-2">Status</th>
-                                <th className="px-4 py-2">Actions</th>
-                                <th className="px-4 py-2">View</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {bookings.map((booking, index) => (
-                                <tr key={booking.id} className="border-b hover:bg-gray-50">
-                                    <td className="px-4 py-2">{index + 1}</td>
-                                    <td className="px-4 py-2">{booking.full_name}</td>
-                                    <td className="px-4 py-2">{booking.package_name}</td>
-                                    <td className="px-4 py-2">
-                                        {booking.start_date} → {booking.end_date}
-                                    </td>
-                                    <td className="px-4 py-2">{booking.price}</td>
-                                    <td className="px-4 py-2 capitalize">{booking.status}</td>
-                                    <td className="space-y-1 px-4 py-2">
-                                        {booking.status === 'pending' ? (
-                                            <>
-                                                <button
-                                                    onClick={() => {
-                                                        setPendingStatus({ bookingId: booking.id, status: 'accepted' });
-                                                        setStatusModalOpen(true);
-                                                    }}
-                                                    disabled={processing === booking.id}
-                                                    className="mr-2 rounded bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50"
-                                                >
-                                                    {processing === booking.id ? 'Approving...' : 'Approve'}
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setPendingStatus({ bookingId: booking.id, status: 'rejected' });
-                                                        setStatusModalOpen(true);
-                                                    }}
-                                                    disabled={processing === booking.id}
-                                                    className="rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50"
-                                                >
-                                                    {processing === booking.id ? 'Rejecting...' : 'Reject'}
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <span
-                                                className={`text-xs font-medium ${booking.status === 'accepted' ? 'text-green-600' : 'text-red-600'}`}
-                                            >
-                                                {booking.status === 'accepted' ? '✓ Accepted' : '✗ Rejected'}
-                                            </span>
-                                        )}
-
-                                        {booking.status === 'accepted' && (
-                                            <div className="mt-2 flex items-center space-x-2">
-                                                <select
-                                                    value={selectedDurations[booking.id] || 'weekly'}
-                                                    onChange={(e) =>
-                                                        setSelectedDurations((prev) => ({
-                                                            ...prev,
-                                                            [booking.id]: e.target.value,
-                                                        }))
-                                                    }
-                                                    className="rounded border px-2 py-1 text-xs"
-                                                >
-                                                    {extendRanges.map((range) => (
-                                                        <option key={range.value} value={range.value}>
-                                                            {range.label}
-                                                        </option>
-                                                    ))}
-                                                </select>
-
-                                                <button
-                                                    onClick={() => {
-                                                        const duration = (selectedDurations[booking.id] as ExtendRange['value']) || 'weekly';
-
-                                                        const currentEnd = new Date(booking.end_date);
-                                                        const durationDays = {
-                                                            daily: 1,
-                                                            '2-day': 2,
-                                                            weekly: 7,
-                                                            monthly: 30,
-                                                            yearly: 365,
-                                                        }[duration];
-
-                                                        const newEnd = new Date(currentEnd);
-                                                        newEnd.setDate(newEnd.getDate() + durationDays);
-                                                        const newEndDate = newEnd.toISOString().split('T')[0];
-
-                                                        setPendingExtension({ bookingId: booking.id, duration, newEndDate });
-                                                        setExtendModalOpen(true);
-                                                    }}
-                                                    disabled={processing === booking.id}
-                                                    className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-                                                >
-                                                    Extend
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-2">
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                {booking.status === 'pending' ? (
+                                    <>
                                         <button
                                             onClick={() => {
-                                                setSelectedBooking(booking);
-                                                setDetailModalOpen(true);
+                                                setPendingStatus({ bookingId: booking.id, status: 'accepted' });
+                                                setStatusModalOpen(true);
                                             }}
-                                            className="text-xs text-blue-600 hover:underline"
+                                            className="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700"
                                         >
-                                            View
+                                            Approve
                                         </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                        <button
+                                            onClick={() => {
+                                                setPendingStatus({ bookingId: booking.id, status: 'rejected' });
+                                                setStatusModalOpen(true);
+                                            }}
+                                            className="rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700"
+                                        >
+                                            Reject
+                                        </button>
+                                    </>
+                                ) : (
+                                    booking.status === 'accepted' && (
+                                        <>
+                                            <select
+                                                value={selectedDurations[booking.id] || 'weekly'}
+                                                onChange={(e) => setSelectedDurations((prev) => ({ ...prev, [booking.id]: e.target.value }))}
+                                                className="rounded border px-2 py-1 text-xs"
+                                            >
+                                                {extendRanges.map((range) => (
+                                                    <option key={range.value} value={range.value}>
+                                                        {range.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <button
+                                                onClick={() => {
+                                                    const duration = selectedDurations[booking.id] || 'weekly';
+                                                    const end = new Date(booking.end_date);
+                                                    const days = { daily: 1, '2-day': 2, weekly: 7, monthly: 30, yearly: 365 }[duration];
+                                                    end.setDate(end.getDate() + days);
+                                                    setPendingExtension({
+                                                        bookingId: booking.id,
+                                                        duration,
+                                                        newEndDate: end.toISOString().split('T')[0],
+                                                    });
+                                                    setExtendModalOpen(true);
+                                                }}
+                                                className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+                                            >
+                                                Extend
+                                            </button>
+                                        </>
+                                    )
+                                )}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -287,7 +216,7 @@ export default function Booking({ bookings: initialBookings, extendRanges }: Pro
                     open={extendModalOpen}
                     onClose={() => setExtendModalOpen(false)}
                     onConfirm={() => {
-                        extendBooking(pendingExtension.bookingId, pendingExtension.duration);
+                        extendBooking(pendingExtension.bookingId, pendingExtension.duration as ExtendRange['value']);
                         setExtendModalOpen(false);
                         setPendingExtension(null);
                     }}
@@ -306,7 +235,7 @@ export default function Booking({ bookings: initialBookings, extendRanges }: Pro
                         setPendingStatus(null);
                     }}
                     duration={pendingStatus.status}
-                    endDate={''}
+                    endDate=""
                 />
             )}
         </AppLayout>

@@ -154,13 +154,18 @@ export default function PackageFormModal({ open, onClose, onSubmitSuccess, form,
 
                                     {/* Buttons */}
                                     <div className="flex justify-end gap-3 pt-2">
-                                        <button type="button" onClick={onClose} className="rounded border px-4 py-2 text-sm" disabled={submitting}>
+                                        <button
+                                            type="button"
+                                            onClick={onClose}
+                                            className="cursor-pointer rounded border px-4 py-2 text-sm"
+                                            disabled={submitting}
+                                        >
                                             Cancel
                                         </button>
                                         <button
                                             type="submit"
                                             disabled={submitting}
-                                            className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                                            className="cursor-pointer rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
                                         >
                                             {submitting ? 'Saving...' : editing ? 'Update' : 'Create'}
                                         </button>

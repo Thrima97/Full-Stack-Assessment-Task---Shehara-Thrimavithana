@@ -1,4 +1,3 @@
-import backroung from '@/assets/backgroung.jpg';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
@@ -13,8 +12,8 @@ export function AppShell({ children, variant = 'header' }: AppShellProps) {
 
     if (variant === 'header') {
         return (
-            <div className="flex min-h-screen w-full flex-col bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${backroung})` }}>
-                <div className="flex-grow bg-black/40 backdrop-blur-xs">{children}</div>
+            <div className="flex min-h-screen w-full flex-col">
+                <div className="flex-grow">{children}</div>
             </div>
         );
     }

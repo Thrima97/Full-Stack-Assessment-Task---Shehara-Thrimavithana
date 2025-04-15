@@ -11,7 +11,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Menu } from 'lucide-react';
+import { BarChart2, CalendarDays, ClipboardList, FileEdit, LayoutDashboard, Menu, Package, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
@@ -28,20 +28,29 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 
     const adminNavItems: NavItem[] = [
         {
+            title: 'Calendar View',
+            href: '/admin/calendar-view',
+            icon: CalendarDays,
+        },
+        {
             title: 'Booking Management',
             href: '/admin/booking-management',
+            icon: ClipboardList,
         },
         {
             title: 'User Management',
             href: '/admin/user-management',
+            icon: Users,
         },
         {
             title: 'Package Management',
             href: '/admin/package-management',
+            icon: Package,
         },
         {
             title: 'Reports & Analytics',
             href: '/admin/reports-and-analytics',
+            icon: BarChart2,
         },
     ];
 
@@ -49,14 +58,17 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
         {
             title: 'Calendar View',
             href: '/user/calendar-view',
+            icon: CalendarDays,
         },
         {
             title: 'Booking Form',
             href: '/user/booking-form',
+            icon: FileEdit,
         },
         {
             title: 'Dashboard',
             href: '/user/dashboard',
+            icon: LayoutDashboard,
         },
     ];
 
@@ -78,7 +90,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             </SheetTrigger>
                             <SheetContent side="left" className="bg-sidebar flex h-full w-64 flex-col justify-between">
                                 <SheetTitle className="sr-only bg-black">Navigation Menu</SheetTitle>
-                                <SheetHeader className="flex justify-start text-left bg-black">
+                                <SheetHeader className="flex justify-start bg-black text-left">
                                     <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
                                 </SheetHeader>
                                 <div className="flex-1 space-y-4 p-4">
@@ -112,7 +124,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                 'h-9 cursor-pointer bg-transparent px-3 text-white',
                                             )}
                                         >
-                                            {' '}
+                                            {item.icon && <Icon iconNode={item.icon} className="mr-2 h-4 w-4" />}
                                             {item.title}
                                         </Link>
                                         {page.url === item.href && (
@@ -126,7 +138,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
 
                     {/* Right Side (Avatar & Menu) */}
                     <div className="ml-auto flex items-center space-x-2 bg-black">
-                        <div className="hidden lg:flex bg-black">
+                        <div className="hidden bg-black lg:flex">
                             {rightNavItems.map((item) => (
                                 <TooltipProvider key={item.title} delayDuration={0}>
                                     <Tooltip>
