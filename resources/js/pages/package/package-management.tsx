@@ -4,14 +4,10 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Packages',
-        href: '/admin/packages',
-    },
-];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Packages', href: '/admin/packages' }];
 
 interface Package {
     id: number;
@@ -35,54 +31,51 @@ export default function PackagePage() {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    // ✅ Load packages
-    const fetchPackages = async () => {
+    const fetchPackages = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch('/api/packages');
             const data = await res.json();
             if (data.success) {
                 setPackages(data.data);
+            } else {
+                toast.error('Failed to load packages');
             }
-        } catch (error) {
-            console.error('Failed to fetch packages', error);
+        } catch (err) {
+            console.error(err);
+            toast.error('Error fetching packages');
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchPackages();
-    }, []);
+    }, [fetchPackages]);
 
-    // ✅ Add
-    const handleAdd = () => {
+    const handleAddClick = () => {
         setForm({ name: '', seat: 0, description: '' });
         setEditing(false);
         setFormModalOpen(true);
     };
 
-    // ✅ Edit
-    const handleEdit = (pkg: Package) => {
+    const handleEditClick = (pkg: Package) => {
         setForm(pkg);
         setEditing(true);
         setFormModalOpen(true);
     };
 
-    // ✅ Confirm delete
-    const confirmDelete = (id: number) => {
+    const handleDeleteConfirm = (id: number) => {
         setDeletingId(id);
         setDeleteModalOpen(true);
     };
 
-    // ✅ Handle delete using axios
-    const handleConfirmDelete = async () => {
+    const deletePackage = async () => {
         if (!deletingId) return;
 
         try {
             const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
-
-            const response = await axios.delete(`/api/packages/${deletingId}`, {
+            const res = await axios.delete(`/api/packages/${deletingId}`, {
                 withCredentials: true,
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
@@ -90,31 +83,30 @@ export default function PackagePage() {
                 },
             });
 
-            if (response.status === 200) {
+            if (res.status === 200) {
+                toast.success('Package deleted');
                 fetchPackages();
                 setDeleteModalOpen(false);
             } else {
-                alert(response.data?.message || 'Failed to delete package.');
+                toast.error(res.data?.message || 'Deletion failed');
             }
-        } catch (error: any) {
-            console.error('Delete failed:', error);
-            alert(error?.response?.data?.message || 'Unexpected error during deletion.');
+        } catch (err: any) {
+            toast.error(err?.response?.data?.message || 'Unexpected error during deletion');
         }
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Package Management" />
-
-            <div className="mx-auto mt-8 max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl space-y-8 px-4 py-6">
                 <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                    <h1 className="text-2xl font-bold text-gray-800">Package Management</h1>
-                    <button onClick={handleAdd} className="w-full rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 sm:w-auto">
+                    <h1 className="text-2xl font-bold text-white">Package Management</h1>
+                    <button onClick={handleAddClick} className="w-full rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 sm:w-auto">
                         + Add Package
                     </button>
                 </div>
 
-                {/* Loading / Empty */}
+                {/* Packages Grid */}
                 {loading ? (
                     <p className="text-gray-500">Loading packages...</p>
                 ) : packages.length === 0 ? (
@@ -122,14 +114,20 @@ export default function PackagePage() {
                 ) : (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {packages.map((pkg) => (
-                            <div key={pkg.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+                            <div
+                                key={pkg.id}
+                                className="min-w-xs rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm transition hover:shadow-md"
+                            >
                                 <div className="mb-2 flex items-start justify-between gap-4">
-                                    <h2 className="text-lg font-semibold text-gray-800">{pkg.name}</h2>
+                                    <h2 className="text-lg font-semibold text-gray-900">{pkg.name}</h2>
                                     <div className="flex gap-2">
-                                        <button onClick={() => handleEdit(pkg)} className="text-sm text-blue-500 hover:underline">
+                                        <button onClick={() => handleEditClick(pkg)} className="cursor-pointer text-sm text-blue-500 hover:underline">
                                             Edit
                                         </button>
-                                        <button onClick={() => confirmDelete(pkg.id)} className="text-sm text-red-500 hover:underline">
+                                        <button
+                                            onClick={() => handleDeleteConfirm(pkg.id)}
+                                            className="cursor-pointer text-sm text-red-500 hover:underline"
+                                        >
                                             Delete
                                         </button>
                                     </div>
@@ -142,21 +140,24 @@ export default function PackagePage() {
                 )}
             </div>
 
-            {/* Modal: Create/Edit */}
+            {/* Create / Edit Modal */}
             <PackageFormModal
                 open={formModalOpen}
                 onClose={() => setFormModalOpen(false)}
-                onSubmitSuccess={fetchPackages}
+                onSubmitSuccess={() => {
+                    toast.success(editing ? 'Package updated' : 'Package created');
+                    fetchPackages();
+                }}
                 form={form}
                 setForm={setForm}
                 editing={editing}
             />
 
-            {/* Modal: Delete Confirmation */}
+            {/* Delete Confirmation Modal */}
             <DeleteConfirmModal
                 open={deleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
-                onConfirm={handleConfirmDelete}
+                onConfirm={deletePackage}
                 title="Delete Package"
                 message="Are you sure you want to delete this package?"
                 confirmText="Delete"

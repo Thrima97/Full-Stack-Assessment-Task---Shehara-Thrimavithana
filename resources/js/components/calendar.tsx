@@ -230,8 +230,8 @@ export default function Calendar({ seatCounts }: CalendarProps) {
                 </div>
 
                 {/* Weekday Labels */}
-                <div className="border border-black bg-gray-100">
-                    <div className="grid grid-cols-7 divide-x divide-black border-b border-black">
+                <div className="border border-black">
+                    <div className="grid grid-cols-7 divide-x divide-black border-b border-black bg-gray-100">
                         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                             <div key={day} className="p-3.5 text-center text-sm font-medium text-gray-500">
                                 {day}
@@ -263,9 +263,14 @@ export default function Calendar({ seatCounts }: CalendarProps) {
                                     </span>
                                     {!isDisabled && (
                                         <>
-                                            <span className="block text-[10px] leading-tight font-semibold text-green-600 sm:hidden">
-                                                {available.length}
-                                            </span>
+                                            {available.length > 0 && (
+                                                <span className="block text-[10px] leading-tight font-semibold text-blue-600 sm:hidden">
+                                                    {Array.from({ length: available.length }).map((_, i) => (
+                                                        <span key={i} className="mr-0.5 inline-block h-1.5 w-1.5 rounded-full bg-blue-600" />
+                                                    ))}
+                                                </span>
+                                            )}
+
                                             <span className="mt-1 hidden rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700 sm:block">
                                                 {available.length} Available
                                             </span>
