@@ -74,7 +74,7 @@ export default function BookingManagement({ bookings: initialBookings, extendRan
             setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, status } : b)));
             toast.success(`Booking ${status}`);
         } catch (err: any) {
-            toast.error(err.message || 'Failed to update booking');
+            toast.error(err.response.data.message || 'Failed to update booking');
         } finally {
             setProcessing(null);
         }
@@ -106,7 +106,7 @@ export default function BookingManagement({ bookings: initialBookings, extendRan
             setSelectedDurations((prev) => ({ ...prev, [bookingId]: '' }));
             toast.success('Booking extended successfully');
         } catch (err: any) {
-            toast.error(err.message || 'Extension failed');
+            toast.error(err.response.data.message || 'Extension failed');
         } finally {
             setProcessing(null);
         }
