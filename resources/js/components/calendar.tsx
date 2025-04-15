@@ -38,7 +38,6 @@ export default function Calendar({ seatCounts }: CalendarProps) {
     const [packages, setPackages] = useState<Package[]>([]);
     const [seatFilter, setSeatFilter] = useState<number | null>(null);
     const [showFilters, setShowFilters] = useState(false);
-
     useEffect(() => {
         const fetchPackages = async () => {
             try {
@@ -251,7 +250,6 @@ export default function Calendar({ seatCounts }: CalendarProps) {
                             const isDisabled = isPast || available.length === 0;
                             const isSelected = isSameDay(date, selectedDate);
                             const isOtherMonth = date.getMonth() !== currentMonth.getMonth(); // ✅ PLACE IT HERE
-
                             return (
                                 <div
                                     key={date.toISOString()}
@@ -281,6 +279,7 @@ export default function Calendar({ seatCounts }: CalendarProps) {
                         })}
                     </div>
                 </div>
+                <div>{packages.length === 0 && <p className="text-lg text-gray-300 mt-2 px-1">No packages data</p>}</div>
 
                 {/* Selected Date - Packages */}
                 {selectedDate && (

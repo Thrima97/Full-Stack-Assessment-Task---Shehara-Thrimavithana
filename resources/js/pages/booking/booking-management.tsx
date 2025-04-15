@@ -115,98 +115,120 @@ export default function BookingManagement({ bookings: initialBookings, extendRan
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Booking Management" />
-
+            
             <div className="mx-auto mt-8 max-w-7xl space-y-6">
                 <h1 className="text-2xl font-bold text-white">Booking Management</h1>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {bookings.map((booking, index) => (
-                        <div key={booking.id} className="min-w-xs rounded-lg border bg-white p-4 shadow-sm">
-                            <div className="flex justify-between">
-                                <div className="mb-1 text-xs text-gray-400">#{index + 1}</div>
-                                <button
-                                    onClick={() => {
-                                        setSelectedBooking(booking);
-                                        setDetailModalOpen(true);
-                                    }}
-                                    className="flex cursor-pointer items-center text-xs text-blue-600 hover:underline"
-                                >
-                                    <FontAwesomeIcon icon={faEye} className="mr-1 h-3 w-3" />
-                                    View
-                                </button>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-900">{booking.full_name}</h3>
-                            <p className="text-sm text-gray-600">Package: {booking.package_name}</p>
-                            <p className="text-sm text-gray-600">
-                                Date: {booking.start_date} → {booking.end_date}
-                            </p>
-                            <p className="text-sm text-gray-600">Price: LKR {booking.price}</p>
-                            <p
-                                className={`text-sm font-semibold capitalize ${booking.status === 'accepted' ? 'text-green-600' : booking.status === 'rejected' ? 'text-red-600' : 'text-yellow-600'}`}
-                            >
-                                Status: {booking.status}
-                            </p>
+                {bookings.length === 0 ? (
+                    <p className="text-center text-gray-300">No booking data available</p>
+                ) : (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {bookings.map((booking, index) => (
+                            <div key={booking.id} className="min-w-xs rounded-lg border bg-white p-4 shadow-sm">
+                                <div className="flex justify-between">
+                                    <div className="mb-1 text-xs text-gray-400">#{index + 1}</div>
+                                    <button
+                                        onClick={() => {
+                                            setSelectedBooking(booking);
+                                            setDetailModalOpen(true);
+                                        }}
+                                        className="flex cursor-pointer items-center text-xs text-blue-600 hover:underline"
+                                    >
+                                        <FontAwesomeIcon icon={faEye} className="mr-1 h-3 w-3" />
+                                        View
+                                    </button>
+                                </div>
 
-                            <div className="mt-3 flex flex-wrap gap-2">
-                                {booking.status === 'pending' ? (
-                                    <>
-                                        <button
-                                            onClick={() => {
-                                                setPendingStatus({ bookingId: booking.id, status: 'accepted' });
-                                                setStatusModalOpen(true);
-                                            }}
-                                            className="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700"
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setPendingStatus({ bookingId: booking.id, status: 'rejected' });
-                                                setStatusModalOpen(true);
-                                            }}
-                                            className="rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700"
-                                        >
-                                            Reject
-                                        </button>
-                                    </>
-                                ) : (
-                                    booking.status === 'accepted' && (
+                                <h3 className="text-lg font-semibold text-gray-900">{booking.full_name}</h3>
+                                <p className="text-sm text-gray-600">Package: {booking.package_name}</p>
+                                <p className="text-sm text-gray-600">
+                                    Date: {booking.start_date} → {booking.end_date}
+                                </p>
+                                <p className="text-sm text-gray-600">Price: LKR {booking.price}</p>
+                                <p
+                                    className={`text-sm font-semibold capitalize ${
+                                        booking.status === 'accepted'
+                                            ? 'text-green-600'
+                                            : booking.status === 'rejected'
+                                              ? 'text-red-600'
+                                              : 'text-yellow-600'
+                                    }`}
+                                >
+                                    Status: {booking.status}
+                                </p>
+
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    {booking.status === 'pending' ? (
                                         <>
-                                            <select
-                                                value={selectedDurations[booking.id] || 'weekly'}
-                                                onChange={(e) => setSelectedDurations((prev) => ({ ...prev, [booking.id]: e.target.value }))}
-                                                className="rounded border px-2 py-1 text-xs"
-                                            >
-                                                {extendRanges.map((range) => (
-                                                    <option key={range.value} value={range.value}>
-                                                        {range.label}
-                                                    </option>
-                                                ))}
-                                            </select>
                                             <button
                                                 onClick={() => {
-                                                    const duration = selectedDurations[booking.id] || 'weekly';
-                                                    const end = new Date(booking.end_date);
-                                                    const days = { daily: 1, '2-day': 2, weekly: 7, monthly: 30, yearly: 365 }[duration];
-                                                    end.setDate(end.getDate() + days);
-                                                    setPendingExtension({
-                                                        bookingId: booking.id,
-                                                        duration,
-                                                        newEndDate: end.toISOString().split('T')[0],
-                                                    });
-                                                    setExtendModalOpen(true);
+                                                    setPendingStatus({ bookingId: booking.id, status: 'accepted' });
+                                                    setStatusModalOpen(true);
                                                 }}
-                                                className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+                                                className="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700"
                                             >
-                                                Extend
+                                                Approve
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setPendingStatus({ bookingId: booking.id, status: 'rejected' });
+                                                    setStatusModalOpen(true);
+                                                }}
+                                                className="rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700"
+                                            >
+                                                Reject
                                             </button>
                                         </>
-                                    )
-                                )}
+                                    ) : (
+                                        booking.status === 'accepted' && (
+                                            <>
+                                                <select
+                                                    value={selectedDurations[booking.id] || 'weekly'}
+                                                    onChange={(e) =>
+                                                        setSelectedDurations((prev) => ({
+                                                            ...prev,
+                                                            [booking.id]: e.target.value,
+                                                        }))
+                                                    }
+                                                    className="rounded border px-2 py-1 text-xs"
+                                                >
+                                                    {extendRanges.map((range) => (
+                                                        <option key={range.value} value={range.value}>
+                                                            {range.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <button
+                                                    onClick={() => {
+                                                        const duration = selectedDurations[booking.id] || 'weekly';
+                                                        const end = new Date(booking.end_date);
+                                                        const days = {
+                                                            daily: 1,
+                                                            '2-day': 2,
+                                                            weekly: 7,
+                                                            monthly: 30,
+                                                            yearly: 365,
+                                                        }[duration];
+                                                        end.setDate(end.getDate() + days);
+                                                        setPendingExtension({
+                                                            bookingId: booking.id,
+                                                            duration,
+                                                            newEndDate: end.toISOString().split('T')[0],
+                                                        });
+                                                        setExtendModalOpen(true);
+                                                    }}
+                                                    className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+                                                >
+                                                    Extend
+                                                </button>
+                                            </>
+                                        )
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <BookingDetailModal open={detailModalOpen} onClose={() => setDetailModalOpen(false)} booking={selectedBooking} />
